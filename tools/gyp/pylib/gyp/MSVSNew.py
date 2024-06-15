@@ -6,10 +6,10 @@
 
 import hashlib
 import os
-import random
 from operator import attrgetter
 
 import gyp.common
+import secrets
 
 try:
   cmp
@@ -18,7 +18,7 @@ except NameError:
     return (x > y) - (x < y)
 
 # Initialize random number generator
-random.seed()
+secrets.SystemRandom().seed()
 
 # GUIDs for project types
 ENTRY_TYPE_GUIDS = {

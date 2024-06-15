@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import random
+import secrets
 
 # List of configuration experiments for correctness fuzzing.
 # List of <probability>, <1st config name>, <2nd config name>, <2nd d8>.
@@ -51,7 +51,7 @@ class Config(object):
       use rng.
     """
     self.name = name
-    self.rng = rng or random.Random()
+    self.rng = rng or secrets.SystemRandom().Random()
     self.random_seed = random_seed
 
   def choose_foozzie_flags(self):
@@ -62,9 +62,9 @@ class Config(object):
     # TODO(machenbach): Temporarily use same RNG state for all test cases in one
     # fuzz session. See also TODO above.
     if self.random_seed is not None:
-      flags_rng = random.Random(self.random_seed)
+      flags_rng = secrets.SystemRandom().Random(self.random_seed)
     else:
-      flags_rng = random.Random()
+      flags_rng = secrets.SystemRandom().Random()
 
     # Add additional flags to second config based on experiment percentages.
     extra_flags = []
