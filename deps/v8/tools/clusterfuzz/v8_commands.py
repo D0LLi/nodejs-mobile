@@ -8,6 +8,7 @@ import signal
 import subprocess
 import sys
 from threading import Event, Timer
+from security import safe_command
 
 
 class Output(object):
@@ -31,8 +32,7 @@ class Output(object):
 def Execute(args, cwd, timeout=None):
   popen_args = [c for c in args if c != ""]
   try:
-    process = subprocess.Popen(
-      args=popen_args,
+    process = safe_command.run(subprocess.Popen, args=popen_args,
       stdout=subprocess.PIPE,
       stderr=subprocess.STDOUT,
       cwd=cwd

@@ -11,6 +11,7 @@ import os.path
 import signal
 import subprocess
 import sys
+from security import safe_command
 
 GCMOLE_PATH = os.path.dirname(os.path.abspath(__file__))
 CLANG_BIN = os.path.join(GCMOLE_PATH, 'gcmole-tools', 'bin')
@@ -26,8 +27,7 @@ if not os.path.isfile("out/Release/gen/torque-generated/builtin-definitions-tq.h
   print("Either build v8 in out/Release or change gcmole.lua:115")
   sys.exit(-1)
 
-proc = subprocess.Popen(
-    [LUA, DRIVER, sys.argv[1]],
+proc = safe_command.run(subprocess.Popen, [LUA, DRIVER, sys.argv[1]],
     env={'CLANG_BIN': CLANG_BIN, 'CLANG_PLUGINS': CLANG_PLUGINS},
     cwd=BASE_PATH,
 )

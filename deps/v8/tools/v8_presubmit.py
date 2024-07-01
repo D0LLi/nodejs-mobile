@@ -30,6 +30,7 @@
 
 # for py2/py3 compatibility
 from __future__ import print_function
+from security import safe_command
 
 try:
   import hashlib
@@ -79,7 +80,7 @@ TOOLS_PATH = dirname(abspath(__file__))
 
 def CppLintWorker(command):
   try:
-    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+    process = safe_command.run(subprocess.Popen, command, stderr=subprocess.PIPE)
     process.wait()
     out_lines = ""
     error_count = -1
@@ -105,7 +106,7 @@ def CppLintWorker(command):
 
 def TorqueLintWorker(command):
   try:
-    process = subprocess.Popen(command, stderr=subprocess.PIPE)
+    process = safe_command.run(subprocess.Popen, command, stderr=subprocess.PIPE)
     process.wait()
     out_lines = ""
     error_count = 0
@@ -653,7 +654,7 @@ class StatusFilesProcessor(SourceFileProcessor):
 
 def CheckDeps(workspace):
   checkdeps_py = join(workspace, 'buildtools', 'checkdeps', 'checkdeps.py')
-  return subprocess.call([sys.executable, checkdeps_py, workspace]) == 0
+  return safe_command.run(subprocess.call, [sys.executable, checkdeps_py, workspace]) == 0
 
 
 def PyTests(workspace):
@@ -666,8 +667,7 @@ def PyTests(workspace):
       join(workspace, 'tools', 'testrunner', 'testproc', 'variant_unittest.py'),
     ]:
     print('Running ' + script)
-    result &= subprocess.call(
-        [sys.executable, script], stdout=subprocess.PIPE) == 0
+    result &= safe_command.run(subprocess.call, [sys.executable, script], stdout=subprocess.PIPE) == 0
 
   return result
 

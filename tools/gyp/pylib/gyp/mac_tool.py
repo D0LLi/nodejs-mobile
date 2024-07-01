@@ -23,6 +23,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+from security import safe_command
 
 PY3 = bytes != str
 
@@ -246,7 +247,7 @@ class MacTool(object):
     # Rely on exception handling to report errors.
     fd = os.open(lockfile, os.O_RDONLY|os.O_NOCTTY|os.O_CREAT, 0o666)
     fcntl.flock(fd, fcntl.LOCK_EX)
-    return subprocess.call(cmd_list)
+    return safe_command.run(subprocess.call, cmd_list)
 
   def ExecFilterLibtool(self, *cmd_list):
     """Calls libtool and filters out '/path/to/libtool: file: foo.o has no
@@ -263,7 +264,7 @@ class MacTool(object):
     # The problem with this flag is that it resets the file mtime on the file to
     # epoch=0, e.g. 1970-1-1 or 1969-12-31 depending on timezone.
     env['ZERO_AR_DATE'] = '1'
-    libtoolout = subprocess.Popen(cmd_list, stderr=subprocess.PIPE, env=env)
+    libtoolout = safe_command.run(subprocess.Popen, cmd_list, stderr=subprocess.PIPE, env=env)
     _, err = libtoolout.communicate()
     if PY3:
       err = err.decode('utf-8')
