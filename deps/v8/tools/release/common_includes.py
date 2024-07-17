@@ -207,9 +207,9 @@ def Command(cmd, args="", prefix="", pipe=True, cwd=None):
   sys.stdout.flush()
   try:
     if pipe:
-      return subprocess.check_output(cmd_line, shell=True, cwd=cwd)
+      return subprocess.check_output(cmd_line, shell=False, cwd=cwd)
     else:
-      return subprocess.check_call(cmd_line, shell=True, cwd=cwd)
+      return subprocess.check_call(cmd_line, shell=False, cwd=cwd)
   except subprocess.CalledProcessError:
     return None
   finally:

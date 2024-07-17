@@ -31,7 +31,7 @@ import sys
 def invoke(cmdline):
   try:
     return (subprocess.check_output(
-        cmdline, shell=True, stderr=subprocess.STDOUT), 0)
+        cmdline, shell=False, stderr=subprocess.STDOUT), 0)
   except subprocess.CalledProcessError as e:
     return (e.output, e.returncode)
 
