@@ -791,18 +791,18 @@ class LibraryRepo(object):
     if not os.path.exists(KERNEL_ALLSYMS_FILE):
       print("Warning: %s not found" % KERNEL_ALLSYMS_FILE, file=sys.stderr)
       return False
-    kallsyms = open(KERNEL_ALLSYMS_FILE, "r")
-    code = None
-    for line in kallsyms:
-      match = KERNEL_ALLSYMS_LINE_RE.match(line)
-      if match:
-        start_address = int(match.group(1), 16)
-        end_address = start_address
-        name = match.group(2)
-        if code:
-          code.end_address = start_address
-          code_map.Add(code, 16)
-        code = Code(name, start_address, end_address, "kernel", 0)
+    with open(KERNEL_ALLSYMS_FILE, "r") as kallsyms:
+      code = None
+      for line in kallsyms:
+        match = KERNEL_ALLSYMS_LINE_RE.match(line)
+        if match:
+          start_address = int(match.group(1), 16)
+          end_address = start_address
+          name = match.group(2)
+          if code:
+            code.end_address = start_address
+            code_map.Add(code, 16)
+          code = Code(name, start_address, end_address, "kernel", 0)
     return True
 
 

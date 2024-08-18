@@ -117,9 +117,9 @@ class StatsViewer(object):
           sys.exit(1)
       finally:
         maps_file.close()
-    data_file = open(self.data_name, "r")
-    size = os.fstat(data_file.fileno()).st_size
-    fileno = data_file.fileno()
+    with open(self.data_name, "r") as data_file:
+      size = os.fstat(data_file.fileno()).st_size
+      fileno = data_file.fileno()
     self.shared_mmap = mmap.mmap(fileno, size, access=mmap.ACCESS_READ)
     data_access = SharedDataAccess(self.shared_mmap)
     if data_access.IntAt(0) == COUNTERS_FILE_MAGIC_NUMBER:

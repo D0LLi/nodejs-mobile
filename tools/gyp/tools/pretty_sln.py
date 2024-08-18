@@ -53,40 +53,40 @@ def ParseSolution(solution_file):
   dep_line = re.compile(' *({.*}) = ({.*})$')
 
   in_deps = False
-  solution = open(solution_file)
-  for line in solution:
-    results = begin_project.search(line)
-    if results:
-      # Hack to remove icu because the diff is too different.
-      if results.group(1).find('icu') != -1:
+  with open(solution_file) as solution:
+    for line in solution:
+      results = begin_project.search(line)
+      if results:
+        # Hack to remove icu because the diff is too different.
+        if results.group(1).find('icu') != -1:
+          continue
+        # We remove "_gyp" from the names because it helps to diff them.
+        current_project = results.group(1).replace('_gyp', '')
+        projects[current_project] = [results.group(2).replace('_gyp', ''),
+                                     results.group(3),
+                                     results.group(2)]
+        dependencies[current_project] = []
         continue
-      # We remove "_gyp" from the names because it helps to diff them.
-      current_project = results.group(1).replace('_gyp', '')
-      projects[current_project] = [results.group(2).replace('_gyp', ''),
-                                   results.group(3),
-                                   results.group(2)]
-      dependencies[current_project] = []
-      continue
 
-    results = end_project.search(line)
-    if results:
-      current_project = None
-      continue
+      results = end_project.search(line)
+      if results:
+        current_project = None
+        continue
 
-    results = begin_dep.search(line)
-    if results:
-      in_deps = True
-      continue
+      results = begin_dep.search(line)
+      if results:
+        in_deps = True
+        continue
 
-    results = end_dep.search(line)
-    if results:
-      in_deps = False
-      continue
+      results = end_dep.search(line)
+      if results:
+        in_deps = False
+        continue
 
-    results = dep_line.search(line)
-    if results and in_deps and current_project:
-      dependencies[current_project].append(results.group(1))
-      continue
+      results = dep_line.search(line)
+      if results and in_deps and current_project:
+        dependencies[current_project].append(results.group(1))
+        continue
 
   # Change all dependencies clsid to name instead.
   for project in dependencies:

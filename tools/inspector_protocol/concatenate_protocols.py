@@ -25,8 +25,8 @@ def main(argv):
         if not os.path.isfile(file_name):
             sys.stderr.write("Cannot find %s\n" % file_name)
             return 1
-        input_file = open(file_name, "r")
-        parsed_json = pdl.loads(input_file.read(), file_name)
+        with open(file_name, "r") as input_file:
+            parsed_json = pdl.loads(input_file.read(), file_name)
         domains += parsed_json["domains"]
         version = parsed_json["version"]
 
