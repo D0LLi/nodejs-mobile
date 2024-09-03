@@ -789,7 +789,7 @@ class CustomMachineConfiguration:
   def GetASLR():
     try:
       with open('/proc/sys/kernel/randomize_va_space', 'r') as f:
-        return int(f.readline().strip())
+        return int(f.readline(5_000_000).strip())
     except Exception:
       logging.exception('Failed to get current ASLR settings.')
       raise
@@ -812,7 +812,7 @@ class CustomMachineConfiguration:
   def GetCPUCoresRange():
     try:
       with open('/sys/devices/system/cpu/present', 'r') as f:
-        indexes = f.readline()
+        indexes = f.readline(5_000_000)
         r = map(int, indexes.split('-'))
         if len(r) == 1:
           return range(r[0], r[0] + 1)
@@ -837,7 +837,7 @@ class CustomMachineConfiguration:
         cpu_device = CustomMachineConfiguration.GetCPUPathForId(cpu_index)
         with open(cpu_device, 'r') as f:
           # We assume the governors of all CPUs are set to the same value
-          val = f.readline().strip()
+          val = f.readline(5_000_000).strip()
           if ret == None:
             ret = val
           elif ret != val:
