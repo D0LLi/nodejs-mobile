@@ -9,10 +9,10 @@ from __future__ import print_function
 import json
 import optparse
 import os
-import random
 import shutil
 import subprocess
 import sys
+import secrets
 
 
 BLACKLIST = [
@@ -22,7 +22,7 @@ BLACKLIST = [
 
 
 def GetRandomObject():
-  return random.choice([
+  return secrets.choice([
     "0", "1", "2.5", "0x1000", "\"string\"", "{foo: \"bar\"}", "[1, 2, 3]",
     "function() { return 0; }"
   ])
