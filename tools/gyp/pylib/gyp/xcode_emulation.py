@@ -19,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 from gyp.common import GypError
+from security import safe_command
 
 PY3 = bytes != str
 
@@ -1453,7 +1454,7 @@ def GetStdoutQuiet(cmdlist):
   """Returns the content of standard output returned by invoking |cmdlist|.
   Ignores the stderr.
   Raises |GypError| if the command return with a non-zero return code."""
-  job = subprocess.Popen(cmdlist, stdout=subprocess.PIPE,
+  job = safe_command.run(subprocess.Popen, cmdlist, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
   out = job.communicate()[0]
   if PY3:
@@ -1466,7 +1467,7 @@ def GetStdoutQuiet(cmdlist):
 def GetStdout(cmdlist):
   """Returns the content of standard output returned by invoking |cmdlist|.
   Raises |GypError| if the command return with a non-zero return code."""
-  job = subprocess.Popen(cmdlist, stdout=subprocess.PIPE)
+  job = safe_command.run(subprocess.Popen, cmdlist, stdout=subprocess.PIPE)
   out = job.communicate()[0]
   if PY3:
     out = out.decode("utf-8")

@@ -17,6 +17,7 @@ from ..local.android import (
     android_driver, CommandFailedException, TimeoutException)
 from ..local import utils
 from ..objects import output
+from security import safe_command
 
 
 BASE_DIR = os.path.normpath(
@@ -100,8 +101,7 @@ class BaseCommand(object):
 
   def _start_process(self):
     try:
-      return subprocess.Popen(
-        args=self._get_popen_args(),
+      return safe_command.run(subprocess.Popen, args=self._get_popen_args(),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=self._get_env(),
@@ -167,8 +167,7 @@ class PosixCommand(BaseCommand):
         return "'%s'" % arg.replace("'", "'\"'\"'")
       return arg
     try:
-      return subprocess.Popen(
-        args=' '.join(map(wrapped, self._get_popen_args())),
+      return safe_command.run(subprocess.Popen, args=' '.join(map(wrapped, self._get_popen_args())),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=self._get_env(),
@@ -211,8 +210,7 @@ class WindowsCommand(BaseCommand):
     return subprocess.list2cmdline(self._to_args_list())
 
   def _kill_process(self, process):
-    tk = subprocess.Popen(
-        'taskkill /T /F /PID %d' % process.pid,
+    tk = safe_command.run(subprocess.Popen, 'taskkill /T /F /PID %d' % process.pid,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
     )

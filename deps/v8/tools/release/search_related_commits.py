@@ -13,6 +13,7 @@ import re
 from sets import Set
 from subprocess import Popen, PIPE
 import sys
+from security import safe_command
 
 def search_all_related_commits(
     git_working_dir, start_hash, until, separator, verbose=False):
@@ -137,7 +138,7 @@ def git_execute(working_dir, args, verbose=False):
   if verbose:
     print("Git working dir: " + working_dir)
     print("Executing git command:" + str(command))
-  p = Popen(args=command, stdin=PIPE,
+  p = safe_command.run(Popen, args=command, stdin=PIPE,
             stdout=PIPE, stderr=PIPE)
   output, err = p.communicate()
   rc = p.returncode

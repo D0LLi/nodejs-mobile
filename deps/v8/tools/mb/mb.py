@@ -30,6 +30,7 @@ import traceback
 import urllib2
 
 from collections import OrderedDict
+from security import safe_command
 
 CHROMIUM_SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))))
@@ -1161,12 +1162,12 @@ class MetaBuildWrapper(object):
 
   def Call(self, cmd, env=None, buffer_output=True):
     if buffer_output:
-      p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
+      p = safe_command.run(subprocess.Popen, cmd, shell=False, cwd=self.chromium_src_dir,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            env=env)
       out, err = p.communicate()
     else:
-      p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
+      p = safe_command.run(subprocess.Popen, cmd, shell=False, cwd=self.chromium_src_dir,
                            env=env)
       p.wait()
       out = err = ''

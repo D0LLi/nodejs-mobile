@@ -25,6 +25,7 @@ import os
 import re
 import subprocess
 import sys
+from security import safe_command
 
 USE_PTY = "linux" in sys.platform
 if USE_PTY:
@@ -156,7 +157,7 @@ def PrintHelpAndExit():
 
 def _Call(cmd, silent=False):
   if not silent: print("# %s" % cmd)
-  return subprocess.call(cmd, shell=True)
+  return safe_command.run(subprocess.call, cmd, shell=True)
 
 def _CallWithOutputNoTerminal(cmd):
   return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
@@ -166,7 +167,7 @@ def _CallWithOutput(cmd):
   # The following trickery is required so that the 'cmd' thinks it's running
   # in a real terminal, while this script gets to intercept its output.
   master, slave = pty.openpty()
-  p = subprocess.Popen(cmd, shell=True, stdin=slave, stdout=slave, stderr=slave)
+  p = safe_command.run(subprocess.Popen, cmd, shell=True, stdin=slave, stdout=slave, stderr=slave)
   os.close(slave)
   output = []
   try:

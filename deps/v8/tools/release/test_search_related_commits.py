@@ -9,6 +9,7 @@ import search_related_commits
 import shutil
 from subprocess import Popen, PIPE, check_call
 import unittest
+from security import safe_command
 
 
 TEST_CONFIG = {
@@ -22,7 +23,7 @@ class TestSearchRelatedCommits(unittest.TestCase):
   def _execute_git(self, git_args):
 
     fullCommand = ["git", "-C", self.base_dir] + git_args
-    p = Popen(args=fullCommand, stdin=PIPE,
+    p = safe_command.run(Popen, args=fullCommand, stdin=PIPE,
         stdout=PIPE, stderr=PIPE)
     output, err = p.communicate()
     rc = p.returncode
