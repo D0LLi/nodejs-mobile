@@ -223,7 +223,7 @@ class WinTool(object):
     (some XML blocks are recognized by the OS loader, but not the manifest
     tool)."""
     env = self._GetEnv(arch)
-    popen = subprocess.Popen(args, shell=True, env=env,
+    popen = subprocess.Popen(args, shell=False, env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
     if PY3:
@@ -257,7 +257,7 @@ class WinTool(object):
         '/proxy', proxy,
         idl]
     env = self._GetEnv(arch)
-    popen = subprocess.Popen(args, shell=True, env=env,
+    popen = subprocess.Popen(args, shell=False, env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
     if PY3:
@@ -278,7 +278,7 @@ class WinTool(object):
   def ExecAsmWrapper(self, arch, *args):
     """Filter logo banner from invocations of asm.exe."""
     env = self._GetEnv(arch)
-    popen = subprocess.Popen(args, shell=True, env=env,
+    popen = subprocess.Popen(args, shell=False, env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
     if PY3:
@@ -295,7 +295,7 @@ class WinTool(object):
     """Filter logo banner from invocations of rc.exe. Older versions of RC
     don't support the /nologo flag."""
     env = self._GetEnv(arch)
-    popen = subprocess.Popen(args, shell=True, env=env,
+    popen = subprocess.Popen(args, shell=False, env=env,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, _ = popen.communicate()
     if PY3:
@@ -318,7 +318,7 @@ class WinTool(object):
         env[k] = v
     args = open(rspfile).read()
     dir = dir[0] if dir else None
-    return subprocess.call(args, shell=True, env=env, cwd=dir)
+    return subprocess.call(args, shell=False, env=env, cwd=dir)
 
   def ExecClCompile(self, project_dir, selected_files):
     """Executed by msvs-ninja projects when the 'ClCompile' target is used to
@@ -329,7 +329,7 @@ class WinTool(object):
         for filename in selected_files]
     cmd = ['ninja.exe']
     cmd.extend(ninja_targets)
-    return subprocess.call(cmd, shell=True, cwd=BASE_DIR)
+    return subprocess.call(cmd, shell=False, cwd=BASE_DIR)
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))

@@ -144,7 +144,7 @@ class VerboseProgressIndicator(SimpleProgressIndicator):
     if platform.system() == 'Linux':
       try:
         cmd = 'ps -aux | grep "%s"' % OUT_DIR
-        output = subprocess.check_output(cmd, shell=True)
+        output = subprocess.check_output(cmd, shell=False)
         self._print('List of processes:')
         for line in (output or '').splitlines():
           # Show command with pid, but other process info cut off.

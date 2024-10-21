@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
   if opts.verbose:
     print("Spawning subprocess: %s." % cmdline)
-  return_code = subprocess.call(cmdline, shell=True, cwd=suite_path)
+  return_code = subprocess.call(cmdline, shell=False, cwd=suite_path)
   if return_code < 0:
     print("Error return code: %d." % return_code)
   if mode == "baseline":

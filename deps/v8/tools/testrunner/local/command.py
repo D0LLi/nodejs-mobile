@@ -172,8 +172,7 @@ class PosixCommand(BaseCommand):
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         env=self._get_env(),
-        shell=True,
-      )
+        shell=False)
     except Exception as e:
       sys.stderr.write('Error executing: %s\n' % self)
       raise e
