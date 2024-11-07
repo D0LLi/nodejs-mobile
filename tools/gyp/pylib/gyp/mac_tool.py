@@ -664,49 +664,48 @@ def WriteHmap(output_name, filelist):
   capacity = NextGreaterPowerOf2(count)
   strings_offset = 24 + (12 * capacity)
   max_value_length = max(len(value) for value in filelist.values())
+  with open(output_name, "wb") as out:
+    out.write(struct.pack('<LHHLLLL', magic, version, _reserved, strings_offset,
+                          count, capacity, max_value_length))
 
-  out = open(output_name, "wb")
-  out.write(struct.pack('<LHHLLLL', magic, version, _reserved, strings_offset,
-                        count, capacity, max_value_length))
+    # Create empty hashmap buckets.
+    buckets = [None] * capacity
+    for file, path in filelist.items():
+      key = 0
+      for c in file:
+        key += ord(c.lower()) * 13
 
-  # Create empty hashmap buckets.
-  buckets = [None] * capacity
-  for file, path in filelist.items():
-    key = 0
-    for c in file:
-      key += ord(c.lower()) * 13
+      # Fill next empty bucket.
+      while buckets[key & capacity - 1] is not None:
+        key = key + 1
+      buckets[key & capacity - 1] = (file, path)
 
-    # Fill next empty bucket.
-    while buckets[key & capacity - 1] is not None:
-      key = key + 1
-    buckets[key & capacity - 1] = (file, path)
+    next_offset = 1
+    for bucket in buckets:
+      if bucket is None:
+        out.write(struct.pack('<LLL', 0, 0, 0))
+      else:
+        (file, path) = bucket
+        key_offset = next_offset
+        prefix_offset = key_offset + len(file) + 1
+        suffix_offset = prefix_offset + len(os.path.dirname(path) + os.sep) + 1
+        next_offset = suffix_offset + len(os.path.basename(path)) + 1
+        out.write(struct.pack('<LLL', key_offset, prefix_offset, suffix_offset))
 
-  next_offset = 1
-  for bucket in buckets:
-    if bucket is None:
-      out.write(struct.pack('<LLL', 0, 0, 0))
-    else:
-      (file, path) = bucket
-      key_offset = next_offset
-      prefix_offset = key_offset + len(file) + 1
-      suffix_offset = prefix_offset + len(os.path.dirname(path) + os.sep) + 1
-      next_offset = suffix_offset + len(os.path.basename(path)) + 1
-      out.write(struct.pack('<LLL', key_offset, prefix_offset, suffix_offset))
+    # Pad byte since next offset starts at 1.
+    out.write(struct.pack('<x'))
 
-  # Pad byte since next offset starts at 1.
-  out.write(struct.pack('<x'))
-
-  for bucket in buckets:
-    if bucket is not None:
-      (file, path) = bucket
-      out.write(struct.pack('<%ds' % len(file), file))
-      out.write(struct.pack('<s', '\0'))
-      base = os.path.dirname(path) + os.sep
-      out.write(struct.pack('<%ds' % len(base), base))
-      out.write(struct.pack('<s', '\0'))
-      path = os.path.basename(path)
-      out.write(struct.pack('<%ds' % len(path), path))
-      out.write(struct.pack('<s', '\0'))
+    for bucket in buckets:
+      if bucket is not None:
+        (file, path) = bucket
+        out.write(struct.pack('<%ds' % len(file), file))
+        out.write(struct.pack('<s', '\0'))
+        base = os.path.dirname(path) + os.sep
+        out.write(struct.pack('<%ds' % len(base), base))
+        out.write(struct.pack('<s', '\0'))
+        path = os.path.basename(path)
+        out.write(struct.pack('<%ds' % len(path), path))
+        out.write(struct.pack('<s', '\0'))
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))
