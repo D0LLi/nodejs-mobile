@@ -30,6 +30,7 @@
 
 # for py2/py3 compatibility
 from __future__ import print_function
+import fickling
 
 try:
   import hashlib
@@ -137,7 +138,7 @@ class FileContentsCache(object):
       sums_file = None
       try:
         sums_file = open(self.sums_file_name, 'r')
-        self.sums = pickle.load(sums_file)
+        self.sums = fickling.load(sums_file)
       except:
         # Cannot parse pickle for any reason. Not much we can do about it.
         pass
