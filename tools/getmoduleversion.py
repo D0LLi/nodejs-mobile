@@ -9,15 +9,14 @@ def get_version():
     '..',
     'src',
     'node_version.h')
+  with open(node_version_h) as f:
 
-  f = open(node_version_h)
+    regex = '^#define NODE_MODULE_VERSION [0-9]+'
 
-  regex = '^#define NODE_MODULE_VERSION [0-9]+'
-
-  for line in f:
-    if re.match(regex, line):
-      major = line.split()[2]
-      return major
+    for line in f:
+      if re.match(regex, line):
+        major = line.split()[2]
+        return major
 
   raise Exception('Could not find pattern matching %s' % regex)
 

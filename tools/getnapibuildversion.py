@@ -9,15 +9,14 @@ def get_napi_version():
     '..',
     'src',
     'node_version.h')
+  with open(napi_version_h) as f:
 
-  f = open(napi_version_h)
+    regex = '^#define NAPI_VERSION'
 
-  regex = '^#define NAPI_VERSION'
-
-  for line in f:
-    if re.match(regex, line):
-      napi_version = line.split()[2]
-      return napi_version
+    for line in f:
+      if re.match(regex, line):
+        napi_version = line.split()[2]
+        return napi_version
 
   raise Exception('Could not find pattern matching %s' % regex)
 
